@@ -11,7 +11,7 @@ public class ChargeBar : MonoBehaviour
     private PlayerController playerController;
 
     
-    private float currentForce;
+    private float currentChargeOnSlider;
     private float minLaunchPower;
     private float maxLaunchPower;
     
@@ -28,16 +28,15 @@ public class ChargeBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(playerController.isCharging)
-        {
-            minLaunchPower = playerController.minLaunchPower;
-            maxLaunchPower = playerController.maxLaunchPower;
-            currentForce = Util.RemapRange(playerController.currentForce,minLaunchPower, maxLaunchPower, slider.minValue, slider.maxValue);
-            slider.value = currentForce;       
-            
-        }
         
+        minLaunchPower = playerController.minLaunchPower;
+        maxLaunchPower = playerController.maxLaunchPower;
+        currentChargeOnSlider = Util.RemapRange(playerController.currentCharge,minLaunchPower, maxLaunchPower, slider.minValue, slider.maxValue);
+        slider.value = currentChargeOnSlider;       
+            
     }
+        
+    
     
 
 
