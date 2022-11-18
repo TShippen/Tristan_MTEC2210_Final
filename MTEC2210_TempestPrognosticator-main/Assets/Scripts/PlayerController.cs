@@ -20,6 +20,9 @@ public class PlayerController : MonoBehaviour
     private bool inFlight = false;          // becomes true if the player is in flight
     public float chargeRate;                // the speed at which the charge increases and decreases
 
+    // stamina/life variables
+
+
     // player component references
     public Animator playerAnimator;         // player animator reference
     private Rigidbody2D rigidbody2D;        // player rigidbody reference
@@ -31,7 +34,7 @@ public class PlayerController : MonoBehaviour
     public GameObject chargeBar;            // reference to the chargeBar object
 
     
-
+    
 
 
 

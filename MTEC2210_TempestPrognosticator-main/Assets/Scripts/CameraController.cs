@@ -29,11 +29,16 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 targetPosition = playerTransform.position + cameraOffset;
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
-
+        
+        CameraFollow();
         TiltCamera();
 
+    }
+
+    void CameraFollow()
+    {
+        Vector3 targetPosition = playerTransform.position + cameraOffset;
+        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);  
     }
 
     
@@ -59,10 +64,12 @@ public class CameraController : MonoBehaviour
             }
         }
 
+        
+
         transform.eulerAngles = new Vector3(
             transform.eulerAngles.x,
             transform.eulerAngles.y,
-            currentTilt
+            Mathf.Clamp(currentTilt, minTilt - 1, maxTilt + 1)
         );
         
 
