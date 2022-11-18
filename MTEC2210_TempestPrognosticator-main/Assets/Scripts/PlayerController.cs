@@ -8,7 +8,6 @@ public class PlayerController : MonoBehaviour
 
     public LayerMask ground;
     public GameManager gameManager;
-    public float moveSpeed;                 // used for horizontal movement speed, but not currently used
 
     // charging and launching variables
     public float minLaunchPower;            // maximum launch power
@@ -16,8 +15,7 @@ public class PlayerController : MonoBehaviour
     public bool isCharging;                 // is charging active
     private bool isChargingUp;               // is charging moving up towards its max, used in the charge bar
     public float currentCharge;             // the force being applied to the player launch when the button is released
-    [SerializeField]
-    private Vector3 launchDirection;        // direction that the player will be launched (still needs work, maybe needs to be an angle)
+    private Vector3 launchDirection;        // direction that the player will be launched, also where the player is "looking"
     private Vector3 mousePosition;          // mouse position taken as long as mouse button is held 
     private bool inFlight = false;          // becomes true if the player is in flight
     public float chargeRate;                // the speed at which the charge increases and decreases
@@ -50,9 +48,9 @@ public class PlayerController : MonoBehaviour
 
         // set values for charging and launching
         isCharging = false;
-        minLaunchPower = 5f;
-        maxLaunchPower = 50f;
-        chargeRate = 50f;
+        minLaunchPower = 20f;
+        maxLaunchPower = 100f;
+        chargeRate = 150f;
 
 
     }
@@ -63,9 +61,6 @@ public class PlayerController : MonoBehaviour
         
         // set collider size to sprite size
         boxCollider2D.size = spriteRenderer.sprite.bounds.size;
-
-        // lock rotation
-        transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
 
         // get mouse position, update sprite based on direction mouse is facing
         DetermineMousePosition();
@@ -150,7 +145,7 @@ public class PlayerController : MonoBehaviour
 
     public bool GroundCheck()
     {
-        bool groundCheck = Physics2D.Raycast(transform.position, Vector2.down, 0.5f, ground);
+        bool groundCheck = Physics2D.Raycast(transform.position, Vector2.down, 0.75f, ground);
         return groundCheck;
     }
 
