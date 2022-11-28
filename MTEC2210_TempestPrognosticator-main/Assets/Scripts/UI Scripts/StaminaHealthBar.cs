@@ -16,7 +16,7 @@ public class StaminaHealthBar : MonoBehaviour
     private float minStaminaHealth;
     private float maxStaminaHealth;
     public float lerpTimer;
-    public float slideTimer = 1f;
+    public float slideTimer;
 
 
     // Start is called before the first frame update
@@ -25,6 +25,8 @@ public class StaminaHealthBar : MonoBehaviour
         PlayerHealthStamina = player.GetComponent<PlayerHealthStamina>();
         minStaminaHealth = PlayerHealthStamina.minStaminaHealth;
         maxStaminaHealth = PlayerHealthStamina.maxStaminaHealth;
+
+        slideTimer = .4f;
 
     }
 

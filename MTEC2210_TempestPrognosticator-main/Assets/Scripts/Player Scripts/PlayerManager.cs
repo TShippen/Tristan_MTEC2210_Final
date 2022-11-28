@@ -10,8 +10,8 @@ public class PlayerManager : MonoBehaviour
     public GameManager gameManager;
 
     //player script references
-    private PlayerHealthStamina playerHealthStamina;
-    private PlayerLaunch playerLaunch;
+    private PlayerHealthStamina PlayerHealthStamina;
+    private PlayerMovement PlayerLaunch;
    
     
 
@@ -21,8 +21,8 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         // get player scripts
-        playerHealthStamina =  GetComponent<PlayerHealthStamina>();
-        playerLaunch =  GetComponent<PlayerLaunch>();
+        PlayerHealthStamina =  GetComponent<PlayerHealthStamina>();
+        PlayerLaunch =  GetComponent<PlayerMovement>();
 
 
     }
@@ -32,10 +32,9 @@ public class PlayerManager : MonoBehaviour
     {
         
         
-  
     }
 
 
-
+    
     
 }

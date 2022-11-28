@@ -5,9 +5,9 @@ using UnityEngine;
 public class PlayerHealthStamina : MonoBehaviour
 {
 
-    // stamina/life variables
-    public float maxStaminaHealth;
+    // stamina/health variables
     public float minStaminaHealth;
+    public float maxStaminaHealth;
     private float currentStaminaHealth;
     public bool alive;
 

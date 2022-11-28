@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class CameraManager : MonoBehaviour
 {
+    public GameManager gameManager;
     [SerializeField] private Transform playerTransform; 
-    private Vector3 cameraOffset = new Vector3(0, 0, -10);
+    private float cameraZOffset = -100;
     private float smoothTime;
     private Vector3 velocity = Vector3.zero;
 
@@ -32,13 +33,23 @@ public class CameraController : MonoBehaviour
         
         CameraFollow();
         TiltCamera();
+        
 
     }
 
     void CameraFollow()
     {
-        Vector3 targetPosition = playerTransform.position + cameraOffset;
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);  
+
+        // clamnps camera position based on sprite size from level sprite
+        Vector3 targetPosition = new Vector3(
+            Mathf.Clamp(playerTransform.position.x, -gameManager.GetLevelSprite().bounds.extents.x, gameManager.GetLevelSprite().bounds.extents.x),
+            Mathf.Clamp(playerTransform.position.y, -gameManager.GetLevelSprite().bounds.extents.y, gameManager.GetLevelSprite().bounds.extents.y),
+            cameraZOffset
+        );
+
+
+        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
+        
     }
 
     
@@ -75,4 +86,7 @@ public class CameraController : MonoBehaviour
 
     }
 
+    
+
+    
 }

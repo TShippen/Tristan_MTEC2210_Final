@@ -9,7 +9,7 @@ public class ChargeBar : MonoBehaviour
     public Slider slider;
     public GameObject player;
     private PlayerHealthStamina PlayerHealthStamina;
-    private PlayerLaunch PlayerLaunch;
+    private PlayerMovement PlayerLaunch;
     public CanvasGroup canvasGroup;
 
     [SerializeField] private float currentLaunchCharge;
@@ -24,7 +24,7 @@ public class ChargeBar : MonoBehaviour
     {
         canvasGroup = GetComponent<CanvasGroup>();
         canvasGroup.alpha = 0;
-        PlayerLaunch = player.GetComponent<PlayerLaunch>();
+        PlayerLaunch = player.GetComponent<PlayerMovement>();
         minLaunchPower = PlayerLaunch.minLaunchPower;
         maxLaunchPower = PlayerLaunch.maxLaunchPower;
         
@@ -43,6 +43,7 @@ public class ChargeBar : MonoBehaviour
 
     private void UpdateBarUI()
     {
+        canvasGroup.alpha = 0;
         currentLaunchCharge = PlayerLaunch.GetCurrentCharge();
         if(currentLaunchCharge > 0)
         {
@@ -50,6 +51,7 @@ public class ChargeBar : MonoBehaviour
             currentChargeOnSlider = Util.RemapRange(currentLaunchCharge, minLaunchPower, maxLaunchPower, slider.minValue, slider.maxValue);
             slider.value = currentChargeOnSlider;
         }
+        
         
     }
 
