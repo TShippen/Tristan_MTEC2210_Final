@@ -22,6 +22,9 @@ public class PlayerMovement : MonoBehaviour
 
     // attack variables
     public float attackSpeed;
+    private bool attacking;
+    public float attackTime;
+    private GameObject currentEnemy;
 
     // player component references
     private Animator playerAnimator;         // player animator reference
@@ -44,6 +47,12 @@ public class PlayerMovement : MonoBehaviour
         chargeRate = 10f;
         launchCost = 10;
 
+        //set values for attacking
+        attackSpeed = .1f;
+        attackTime = 1;
+        attacking = false;
+
+
         // get player components
         rigidbody2D = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -64,18 +73,33 @@ public class PlayerMovement : MonoBehaviour
         boxCollider2D.size = spriteRenderer.sprite.bounds.size;
 
         DetermineMousePosition();
-    
-        
-  
-        if (Input.GetMouseButton(0) && PlayerGroundCheck())
-        {
-            Charging();
-        }
 
-        if (Input.GetMouseButtonUp(0))
+        Debug.Log("Attacking: " + attacking.ToString());
+        
+        if (!attacking)
         {
-            LaunchPlayer();
+            if (Input.GetMouseButton(0) && PlayerGroundCheck())
+            {
+                Charging();
+            }
+
+            if (Input.GetMouseButtonUp(0) && PlayerGroundCheck())
+            {
+                LaunchPlayer();
+            }
+
+            if(Input.GetMouseButtonDown(0) && !PlayerGroundCheck())
+            {
+                EnemyCheck();
+            }
+
         }
+        else
+        {
+            PlayerAttacking();
+        }
+       
+        
     }
     
     void DetermineMousePosition()
@@ -137,13 +161,7 @@ public class PlayerMovement : MonoBehaviour
         currentCharge = 0;
     }
 
-    void PlayerAttack() 
-    {
-        Vector3 enemyPosition = EnemyCheck().transform.position;
-
-
-
-    }
+    
 
     public float GetCurrentCharge()
     {
@@ -159,30 +177,68 @@ public class PlayerMovement : MonoBehaviour
         return groundCheck;
     }
 
-    public RaycastHit2D EnemyCheck()
+    public void EnemyCheck()
     {
         // checks if an enemy is underneath the player
         // this is a bit of a magic number situation, based on testing in the commented-out OnDrawGizmos function
         // this also returns a RaycastHit2D object so that I can get information about whatever it hits
+        
         RaycastHit2D enemyCheck = Physics2D.BoxCast(boxCollider2D.bounds.center - transform.up * .5f, new Vector3(2, .5f, 0), 0f, Vector2.down, 0.5f, enemy);
+        if (enemyCheck)
+        {
+            currentEnemy = enemyCheck.transform.gameObject;
+            attacking = true;
+        }
+        
 
-        return enemyCheck;
+        
+
+        
+
+    }
+
+    void PlayerAttacking() 
+    {
+        if (transform.position != currentEnemy.transform.position)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, currentEnemy.transform.position, attackSpeed);
+            
+        }
+        else
+        {
+            if (attackTime > 0)
+            {
+                transform.position = new Vector3(currentEnemy.transform.position.x, currentEnemy.transform.position.y, currentEnemy.transform.position.z + -1);
+                attackTime -= Time.deltaTime;
+            }
+            else 
+            {
+                attacking = false;
+                currentCharge = maxLaunchPower/2; 
+                LaunchPlayer();
+                attackTime = 100;
+            }
+            
+        }
+        
 
     }
 
     
 
+    
 
-    // void OnDrawGizmos()
-    // {
-    //     rigidbody2D = GetComponent<Rigidbody2D>();
-    //     Gizmos.color = Color.red;
+
+    void OnDrawGizmos()
+    {
+        boxCollider2D = GetComponent<BoxCollider2D>();
+        Gizmos.color = Color.red;
 
         
-    //     //Draw a Ray forward from GameObject toward the maximum distance
-    //     Gizmos.DrawRay(boxCollider2D.bounds.center, -transform.up * .5f);
-    //     //Draw a cube at the maximum distance
-    //     Gizmos.DrawWireCube(boxCollider2D.bounds.center - transform.up * .5f, new Vector3(2, .5f, 0));
+        //Draw a Ray forward from GameObject toward the maximum distance
+        Gizmos.DrawRay(boxCollider2D.bounds.center, -transform.up * .5f);
+        //Draw a cube at the maximum distance
+        Gizmos.DrawWireCube(boxCollider2D.bounds.center - transform.up * .5f, new Vector3(2, .5f, 0));
         
-    // }
+    }
 }
