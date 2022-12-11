@@ -15,7 +15,7 @@ public class StaminaHealthBar : MonoBehaviour
     private float currentHealthStaminaOnSlider;
     private float minStaminaHealth;
     private float maxStaminaHealth;
-    public float lerpTimer;
+    private float lerpTimer;
     public float slideTimer;
 
 

@@ -22,8 +22,9 @@ public class PlayerMovement : MonoBehaviour
 
     // attack variables
     public float attackSpeed;
-    private bool attacking;
+    public bool attacking;
     public float attackTime;
+    public bool draining;
     private GameObject currentEnemy;
 
     // player component references
@@ -49,7 +50,7 @@ public class PlayerMovement : MonoBehaviour
 
         //set values for attacking
         attackSpeed = .1f;
-        attackTime = 1;
+        attackTime = 2;
         attacking = false;
 
 
@@ -70,14 +71,16 @@ public class PlayerMovement : MonoBehaviour
     {
 
         // set collider size to sprite size
-        boxCollider2D.size = spriteRenderer.sprite.bounds.size;
+        // boxCollider2D.size = spriteRenderer.sprite.bounds.size;
+        
+        // determine mouse positionm
+        mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        DetermineLaunchDirection();
 
-        DetermineMousePosition();
-
-        Debug.Log("Attacking: " + attacking.ToString());
         
         if (!attacking)
         {
+            DetermineSpriteDirection();
             if (Input.GetMouseButton(0) && PlayerGroundCheck())
             {
                 Charging();
@@ -90,24 +93,24 @@ public class PlayerMovement : MonoBehaviour
 
             if(Input.GetMouseButtonDown(0) && !PlayerGroundCheck())
             {
-                EnemyCheck();
+                StartCoroutine(StartAttack());
             }
 
         }
-        else
-        {
-            PlayerAttacking();
-        }
+
        
         
+        
+    }
+
+    void FixedUpdate() 
+    {
+        
+            
     }
     
-    void DetermineMousePosition()
+    void DetermineSpriteDirection()
     {
-        mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        launchDirection = mousePosition - transform.position;
-        launchDirection = launchDirection / launchDirection.magnitude;   
-
         if(launchDirection.x > 0)
         {
             spriteRenderer.flipX = true;
@@ -116,7 +119,13 @@ public class PlayerMovement : MonoBehaviour
         {
             spriteRenderer.flipX = false;
         }
-            
+    }
+
+    void DetermineLaunchDirection()
+    {
+        launchDirection = mousePosition - transform.position;
+        launchDirection = launchDirection / launchDirection.magnitude;   
+  
     }
 
     void Charging()
@@ -177,51 +186,85 @@ public class PlayerMovement : MonoBehaviour
         return groundCheck;
     }
 
-    public void EnemyCheck()
+    private IEnumerator StartAttack()
     {
         // checks if an enemy is underneath the player
         // this is a bit of a magic number situation, based on testing in the commented-out OnDrawGizmos function
         // this also returns a RaycastHit2D object so that I can get information about whatever it hits
         
-        RaycastHit2D enemyCheck = Physics2D.BoxCast(boxCollider2D.bounds.center - transform.up * .5f, new Vector3(2, .5f, 0), 0f, Vector2.down, 0.5f, enemy);
+        RaycastHit2D enemyCheck = Physics2D.BoxCast(boxCollider2D.bounds.center - transform.up * .5f, new Vector3(2, 1f, 0), 0f, Vector2.down, 0.5f, enemy);
         if (enemyCheck)
         {
+            // get information about the enemy
             currentEnemy = enemyCheck.transform.gameObject;
-            attacking = true;
+            float enemyMinHealth = currentEnemy.GetComponent<EnemyHealth>().minHealth;
+            float currentEnemyHealth = currentEnemy.GetComponent<EnemyHealth>().GetCurrentHealth();
+            
+            // player attack should hurt enemy by 1/3 of it's health
+            float attackValue = currentEnemyHealth / 3;
+
+            // can only truly attack if enemy current health it greater than min health
+            if (currentEnemyHealth > enemyMinHealth)
+            {
+                // deal damage to enemy
+                currentEnemy.GetComponent<EnemyHealth>().ReduceHealthDamage(attackValue);
+                
+                // let the enemy know you're attacking, it's only polite
+                currentEnemy.GetComponent<GroundEnemyMovement>().beingAttacked = true;
+                // change attacking bool to true
+                attacking = true;
+
+                while (!draining)
+                {   
+                    transform.position = Vector3.MoveTowards(transform.position, currentEnemy.transform.position, attackSpeed);
+                    yield return null;
+                }
+
+                StartCoroutine(PlayerDraining());
+            }        
+        }
+    }
+
+    private IEnumerator PlayerDraining() 
+    {
+        float attackTimeRemaining = attackTime;
+        Debug.Log(attackTimeRemaining);
+        
+        
+        
+            
+        while (attackTimeRemaining > 0)
+        {
+        
+            transform.position = new Vector3(currentEnemy.transform.position.x + .1f, currentEnemy.transform.position.y + .01f, currentEnemy.transform.position.z + -1);
+            attackTimeRemaining -= Time.deltaTime;
+
+            yield return null;
         }
         
-
         
-
+        currentEnemy.GetComponent<GroundEnemyMovement>().beingAttacked = false;    
+        attacking = false;
+        draining = false;
+        currentCharge = maxLaunchPower/2; 
+        LaunchPlayer();
+            
+        
+            
+        
         
 
     }
 
-    void PlayerAttacking() 
-    {
-        if (transform.position != currentEnemy.transform.position)
+    private void OnCollisionEnter2D(Collision2D other) {
+        if ((other.gameObject.tag == "Enemy"))
         {
-            transform.position = Vector3.MoveTowards(transform.position, currentEnemy.transform.position, attackSpeed);
-            
-        }
-        else
-        {
-            if (attackTime > 0)
+            if (attacking == true)
             {
-                transform.position = new Vector3(currentEnemy.transform.position.x, currentEnemy.transform.position.y, currentEnemy.transform.position.z + -1);
-                attackTime -= Time.deltaTime;
+                draining = true;
             }
-            else 
-            {
-                attacking = false;
-                currentCharge = maxLaunchPower/2; 
-                LaunchPlayer();
-                attackTime = 100;
-            }
-            
         }
         
-
     }
 
     
@@ -236,9 +279,9 @@ public class PlayerMovement : MonoBehaviour
 
         
         //Draw a Ray forward from GameObject toward the maximum distance
-        Gizmos.DrawRay(boxCollider2D.bounds.center, -transform.up * .5f);
+        Gizmos.DrawRay(boxCollider2D.bounds.center, -transform.up * .25f);
         //Draw a cube at the maximum distance
-        Gizmos.DrawWireCube(boxCollider2D.bounds.center - transform.up * .5f, new Vector3(2, .5f, 0));
+        Gizmos.DrawWireCube(boxCollider2D.bounds.center - transform.up * .5f, new Vector3(2, 1f, 0));
         
     }
 }

@@ -4,12 +4,19 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
+    private Camera mainCamera;
     public GameManager gameManager;
-    [SerializeField] private Transform playerTransform; 
+    public Transform playerTransform; 
     private float cameraZOffset = -100;
     private float smoothTime;
     private Vector3 velocity = Vector3.zero;
 
+    private float xMin, xMax, yMin, yMax;
+    private float camX, camY;
+    private float camOrthsize;
+    private float cameraRatio;
+
+    // camera tilt variables 
     public bool tiltingLeft;
     public float currentTilt;
     public float maxTilt;
@@ -19,36 +26,48 @@ public class CameraManager : MonoBehaviour
 
     void Start()
     {
-        smoothTime = 0.25f;
+        mainCamera = GetComponent<Camera>();
+
+        smoothTime = 0.1f;
         tiltingLeft = false;
         currentTilt = 0;
         maxTilt = 2f;
         minTilt = -2f;
         tiltSpeed = 2;
+
+        
     }
 
-    // Update is called once per frame
-    void Update()
+
+    void FixedUpdate() 
     {
         
         CameraFollow();
         TiltCamera();
-        
-
     }
 
     void CameraFollow()
     {
 
-        // clamnps camera position based on sprite size from level sprite
-        Vector3 targetPosition = new Vector3(
-            Mathf.Clamp(playerTransform.position.x, -gameManager.GetLevelSprite().bounds.extents.x, gameManager.GetLevelSprite().bounds.extents.x),
-            Mathf.Clamp(playerTransform.position.y, -gameManager.GetLevelSprite().bounds.extents.y, gameManager.GetLevelSprite().bounds.extents.y),
-            cameraZOffset
-        );
+        // set clamp variables
+        xMin = gameManager.GetLevelSprite().bounds.min.x;
+        xMax = gameManager.GetLevelSprite().bounds.max.x;
+        yMin = gameManager.GetLevelSprite().bounds.min.y + .25f;
+        yMax = gameManager.GetLevelSprite().bounds.max.y;
+        camOrthsize = mainCamera.orthographicSize;
+        cameraRatio = mainCamera.aspect * mainCamera.orthographicSize;
 
+        camY = Mathf.Clamp(playerTransform.position.y, yMin + camOrthsize, yMax - camOrthsize);
+        camX = Mathf.Clamp(playerTransform.position.x, xMin + cameraRatio, xMax - cameraRatio);
 
+    
+        // clamps camera position based on sprite size from level sprite
+        Vector3 targetPosition = new Vector3(camX, camY, cameraZOffset);
+
+        
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
+        
+        
         
     }
 
@@ -85,6 +104,8 @@ public class CameraManager : MonoBehaviour
         
 
     }
+
+    
 
     
 

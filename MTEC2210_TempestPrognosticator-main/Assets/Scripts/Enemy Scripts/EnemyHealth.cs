@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-
+    public Animator animator;
+    public Sprite ratDead;
     // health variables
     public float maxHealth;
     public float minHealth;
-    private float currentHealth;
+    public float currentHealth;
     public bool alive;
 
     // Start is called before the first frame update
@@ -24,7 +25,18 @@ public class EnemyHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // check if alive
+        if (GetCurrentHealth() < (maxHealth/2))
+        {
+            alive = false;
         
+        }
+        
+
+        if (!alive)
+        {
+            animator.SetBool("Dead", true);
+        }
     }
 
     public float GetCurrentHealth()
@@ -32,9 +44,11 @@ public class EnemyHealth : MonoBehaviour
         return currentHealth;
     }
 
-    public float ReduceHealthDamage(float damageAmount) 
+    public void ReduceHealthDamage(float damageAmount) 
     {
         currentHealth -= damageAmount;
-        return currentHealth;
+        
     }
+
+    
 }
