@@ -77,7 +77,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ce3ce17ad16e824ab3b2604c283fc4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 7040598792575121553}
+  animator: {fileID: 0}
   ratDead: {fileID: 21300000, guid: 52268f620ef387f4387e9ad9a99b4333, type: 3}
   maxHealth: 0
   minHealth: 0
@@ -139,7 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02c16e70a77a01e4bbc4233b1c10f272, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: {fileID: 1687033868519448611}
+  EnemyHealth: {fileID: 1687033868519448611}
   speed: 1
   groundRaycastDistance: 0
   wallRaycastDistance: 0

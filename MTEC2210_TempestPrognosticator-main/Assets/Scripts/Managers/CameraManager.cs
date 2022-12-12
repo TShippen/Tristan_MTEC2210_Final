@@ -77,7 +77,7 @@ public class CameraManager : MonoBehaviour
         
         if(tiltingLeft)
         {
-            currentTilt += Time.deltaTime * tiltSpeed;
+            currentTilt += Util.FrameDependant(tiltSpeed);
             if(currentTilt > maxTilt)
             {
                 tiltingLeft = false;
@@ -86,7 +86,7 @@ public class CameraManager : MonoBehaviour
         }
         else 
         {
-            currentTilt -= Time.deltaTime * tiltSpeed; 
+            currentTilt -= Util.FrameDependant(tiltSpeed); 
             if(currentTilt < minTilt)
             {
                 tiltingLeft = true;

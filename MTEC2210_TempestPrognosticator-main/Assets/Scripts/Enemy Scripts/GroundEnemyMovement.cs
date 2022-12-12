@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GroundEnemyMovement : MonoBehaviour
 {
-    public EnemyHealth health;
+    public EnemyHealth EnemyHealth;
     public float speed;
     public float groundRaycastDistance;
     public float wallRaycastDistance;
@@ -23,8 +23,8 @@ public class GroundEnemyMovement : MonoBehaviour
     {
         float speedRandomizer = Random.value;
         speed = Util.RemapRange(speedRandomizer, 0, 1, .5f, 2);
-        groundRaycastDistance = .5f;
-        wallRaycastDistance = 1f;
+        groundRaycastDistance = .2f;
+        wallRaycastDistance = .1f;
         movingRight = true;
         frontBumperTransform = transform.Find("FrontBumper").GetComponent<Transform>();
     }
@@ -34,6 +34,7 @@ public class GroundEnemyMovement : MonoBehaviour
     {
         Patrol();
         Debug.DrawRay(frontBumperTransform.position, new Vector2(0, -groundRaycastDistance), Color.green);
+        Debug.DrawRay(frontBumperTransform.position, new Vector2(wallRaycastDistance, 0), Color.green);
     }
 
     
@@ -43,7 +44,7 @@ public class GroundEnemyMovement : MonoBehaviour
 
         // check if being attacked, set movement speed accordingly
         float movementSpeed;
-        if (beingAttacked == true || health.alive == false)
+        if (beingAttacked == true || EnemyHealth.alive == false)
         {
             movementSpeed = 0;
             
@@ -55,9 +56,9 @@ public class GroundEnemyMovement : MonoBehaviour
         
 
         bool groundInfo = Physics2D.Raycast(frontBumperTransform.position, Vector2.down, groundRaycastDistance, ground);
-        bool wallInfo =  Physics2D.Raycast(frontBumperTransform.position, frontBumperTransform.forward, wallRaycastDistance, ground);
+        bool wallInfo =  Physics2D.Raycast(frontBumperTransform.position, new Vector2(wallRaycastDistance, 0), wallRaycastDistance, wall);
         
-        transform.Translate(Vector2.right * movementSpeed * Time.deltaTime);
+        transform.Translate(Vector2.right * Util.FrameDependant(movementSpeed));
 
         if (groundInfo == false || wallInfo == true)
         {
@@ -66,6 +67,7 @@ public class GroundEnemyMovement : MonoBehaviour
             {
                 transform.eulerAngles = new Vector3(0, -180, 0);
                 movingRight = false;
+                wallRaycastDistance *= -1;
                 
             }
             else 
@@ -73,6 +75,7 @@ public class GroundEnemyMovement : MonoBehaviour
 
                 transform.eulerAngles = new Vector3(0,0,0);
                 movingRight = true;
+                wallRaycastDistance *= -1;
                 
             }
         }

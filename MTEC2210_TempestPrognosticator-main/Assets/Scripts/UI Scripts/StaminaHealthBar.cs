@@ -26,7 +26,7 @@ public class StaminaHealthBar : MonoBehaviour
         minStaminaHealth = PlayerHealthStamina.minStaminaHealth;
         maxStaminaHealth = PlayerHealthStamina.maxStaminaHealth;
 
-        slideTimer = .4f;
+        slideTimer = .2f;
 
     }
 
@@ -42,7 +42,7 @@ public class StaminaHealthBar : MonoBehaviour
         if (backSlider.value > currentHealthStaminaOnSlider)
         {
             frontSlider.value = currentHealthStaminaOnSlider;
-            lerpTimer += Time.deltaTime;
+            lerpTimer += Util.FrameDependant(1);
             float percentComplete = lerpTimer / slideTimer;
             
             backSlider.value = Mathf.Lerp(backSlider.value, currentHealthStaminaOnSlider, percentComplete);

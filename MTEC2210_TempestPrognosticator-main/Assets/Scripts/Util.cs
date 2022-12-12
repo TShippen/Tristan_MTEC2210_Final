@@ -15,5 +15,10 @@ public class Util : MonoBehaviour
         return newValue;
     }
 
+    public static float FrameDependant(float value)
+    {
+        return value * Time.deltaTime;
+    }
+
 
 }

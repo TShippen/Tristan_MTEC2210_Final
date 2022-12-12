@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public LayerMask ground;
+    public LayerMask wall;
     public LayerMask enemy;
 
 
@@ -19,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     private bool inFlight = false;          // becomes true if the player is in flight
     public float chargeRate;                // the speed at which the charge increases and decreases
     public float launchCost;
+    public bool groundCheck;
 
     // attack variables
     public float attackSpeed;
@@ -71,9 +73,8 @@ public class PlayerMovement : MonoBehaviour
     {
 
         // set collider size to sprite size
-        // boxCollider2D.size = spriteRenderer.sprite.bounds.size;
-        
-        // determine mouse positionm
+        //boxCollider2D.size = spriteRenderer.sprite.bounds.size;
+        // determine mouse position
         mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         DetermineLaunchDirection();
 
@@ -81,17 +82,17 @@ public class PlayerMovement : MonoBehaviour
         if (!attacking)
         {
             DetermineSpriteDirection();
-            if (Input.GetMouseButton(0) && PlayerGroundCheck())
+            if (Input.GetMouseButton(0) && groundCheck)
             {
                 Charging();
             }
 
-            if (Input.GetMouseButtonUp(0) && PlayerGroundCheck())
+            if (Input.GetMouseButtonUp(0) && groundCheck)
             {
                 LaunchPlayer();
             }
 
-            if(Input.GetMouseButtonDown(0) && !PlayerGroundCheck())
+            if(Input.GetMouseButtonDown(0) && !groundCheck)
             {
                 StartCoroutine(StartAttack());
             }
@@ -137,7 +138,7 @@ public class PlayerMovement : MonoBehaviour
 
         if(isChargingUp)
         {
-            currentCharge += Time.deltaTime * chargeRate;
+            currentCharge += Util.FrameDependant(chargeRate);
             if(currentCharge > maxLaunchPower)
             {
                 isChargingUp = false;
@@ -146,7 +147,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            currentCharge -= Time.deltaTime * chargeRate;
+            currentCharge -= Util.FrameDependant(chargeRate);
             if(currentCharge < minLaunchPower)
             {
                 isChargingUp = true;
@@ -177,14 +178,25 @@ public class PlayerMovement : MonoBehaviour
         return currentCharge;
     }
 
-    public bool PlayerGroundCheck()
-    {
-        // checks if the player is grounded or not
-
-        bool groundCheck = Physics2D.BoxCast(boxCollider2D.bounds.center, boxCollider2D.bounds.size, 0f, Vector2.down, 0.1f, ground);
-
-        return groundCheck;
-    }
+    // public bool PlayerGroundCheck()
+    // {
+    //     // checks if the player is grounded or not
+        
+    //     var groundCheckOnly = Physics2D.BoxCast(boxCollider2D.bounds.center, boxCollider2D.bounds.size, 0f, Vector2.down, 0.1f, ground);
+    //     var wallCheckOnly = Physics2D.BoxCast(boxCollider2D.bounds.center, boxCollider2D.bounds.size, 0f, Vector2.down, 0.1f, wall);
+            
+    //     if (groundCheckOnly || wallCheckOnly)
+    //     {
+    //         groundCheck = true;
+    //     }
+    //     else
+    //     {
+    //         groundCheck = false;
+    //     }
+        
+    
+    //     return groundCheck;
+    // }
 
     private IEnumerator StartAttack()
     {
@@ -192,7 +204,7 @@ public class PlayerMovement : MonoBehaviour
         // this is a bit of a magic number situation, based on testing in the commented-out OnDrawGizmos function
         // this also returns a RaycastHit2D object so that I can get information about whatever it hits
         
-        RaycastHit2D enemyCheck = Physics2D.BoxCast(boxCollider2D.bounds.center - transform.up * .5f, new Vector3(2, 1f, 0), 0f, Vector2.down, 0.5f, enemy);
+        RaycastHit2D enemyCheck = Physics2D.BoxCast(boxCollider2D.bounds.center - transform.up * .1f, new Vector3(1, .25f, 0), 0f, Vector2.down, 0.5f, enemy);
         if (enemyCheck)
         {
             // get information about the enemy
@@ -237,7 +249,7 @@ public class PlayerMovement : MonoBehaviour
         {
         
             transform.position = new Vector3(currentEnemy.transform.position.x + .1f, currentEnemy.transform.position.y + .01f, currentEnemy.transform.position.z + -1);
-            attackTimeRemaining -= Time.deltaTime;
+            attackTimeRemaining -= Util.FrameDependant(1);
 
             yield return null;
         }
@@ -250,10 +262,18 @@ public class PlayerMovement : MonoBehaviour
         LaunchPlayer();
             
         
-            
-        
-        
+    }
 
+    private void PlayerHit()
+    {
+        var reverseVelocity = new Vector2();
+
+        if (rigidbody2D.velocity.y != 0)
+        {
+            reverseVelocity = rigidbody2D.velocity * -.5f;
+        }
+        PlayerHealthStamina.ReduceHealthStaminaDamage(10);
+        rigidbody2D.AddForce(reverseVelocity);
     }
 
     private void OnCollisionEnter2D(Collision2D other) {
@@ -263,6 +283,18 @@ public class PlayerMovement : MonoBehaviour
             {
                 draining = true;
             }
+            else
+            {
+                PlayerHit();
+            }
+        }
+        
+    }
+
+    private void OnCollisionStay2D(Collision2D other) {
+        if ((other.gameObject.layer == 6) || other.gameObject.layer == 8)
+        {
+            groundCheck = true;
         }
         
     }
@@ -281,7 +313,7 @@ public class PlayerMovement : MonoBehaviour
         //Draw a Ray forward from GameObject toward the maximum distance
         Gizmos.DrawRay(boxCollider2D.bounds.center, -transform.up * .25f);
         //Draw a cube at the maximum distance
-        Gizmos.DrawWireCube(boxCollider2D.bounds.center - transform.up * .5f, new Vector3(2, 1f, 0));
+        Gizmos.DrawWireCube(boxCollider2D.bounds.center - transform.up * .1f, new Vector3(1, .25f, 0));
         
     }
 }
