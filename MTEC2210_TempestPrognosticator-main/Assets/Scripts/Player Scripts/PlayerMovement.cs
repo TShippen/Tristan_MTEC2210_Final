@@ -178,25 +178,7 @@ public class PlayerMovement : MonoBehaviour
         return currentCharge;
     }
 
-    // public bool PlayerGroundCheck()
-    // {
-    //     // checks if the player is grounded or not
-        
-    //     var groundCheckOnly = Physics2D.BoxCast(boxCollider2D.bounds.center, boxCollider2D.bounds.size, 0f, Vector2.down, 0.1f, ground);
-    //     var wallCheckOnly = Physics2D.BoxCast(boxCollider2D.bounds.center, boxCollider2D.bounds.size, 0f, Vector2.down, 0.1f, wall);
-            
-    //     if (groundCheckOnly || wallCheckOnly)
-    //     {
-    //         groundCheck = true;
-    //     }
-    //     else
-    //     {
-    //         groundCheck = false;
-    //     }
-        
-    
-    //     return groundCheck;
-    // }
+ 
 
     private IEnumerator StartAttack()
     {
@@ -228,7 +210,7 @@ public class PlayerMovement : MonoBehaviour
 
                 while (!draining)
                 {   
-                    transform.position = Vector3.MoveTowards(transform.position, currentEnemy.transform.position, attackSpeed);
+                    rigidbody2D.position = Vector3.MoveTowards(transform.position, currentEnemy.transform.position, attackSpeed);
                     yield return null;
                 }
 
@@ -248,7 +230,7 @@ public class PlayerMovement : MonoBehaviour
         while (attackTimeRemaining > 0)
         {
         
-            transform.position = new Vector3(currentEnemy.transform.position.x + .1f, currentEnemy.transform.position.y + .01f, currentEnemy.transform.position.z + -1);
+            rigidbody2D.position = new Vector3(currentEnemy.transform.position.x + .1f, currentEnemy.transform.position.y + .01f, currentEnemy.transform.position.z + -1);
             attackTimeRemaining -= Util.FrameDependant(1);
 
             yield return null;
