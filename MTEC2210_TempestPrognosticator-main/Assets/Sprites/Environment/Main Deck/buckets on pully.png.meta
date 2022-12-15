@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 82b91ebcda3014f48b763fc6a0a58404
+guid: 4764a1fcf67f042449dfc4025b86e9f0
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -45,10 +45,10 @@ TextureImporter:
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 9
-  spritePivot: {x: 0.4962035, y: 0.44335517}
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 0, y: 0, z: 0, w: 81}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -117,13 +117,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pirate_legs_0
+      name: buckets on pully_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 101
-        height: 172
+        x: 266
+        y: 23
+        width: 181
+        height: 515
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,8 +131,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 486e5f9ce9fc82e4a9a988fe969f6ab5
-      internalID: -1434018767
+      spriteID: 569c809def7832f46a2a214ca5ca0ec4
+      internalID: 676667051
       vertices: []
       indices: 
       edges: []
@@ -141,14 +141,14 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      pirate_legs_0: -1434018767
+      buckets on pully_0: 676667051
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

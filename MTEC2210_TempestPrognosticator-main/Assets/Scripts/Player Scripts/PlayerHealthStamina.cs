@@ -28,7 +28,15 @@ public class PlayerHealthStamina : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (GetCurrentHealthStamina() < 0)
+        {
+            alive = false;
+        }
+
+        if (alive == false)
+        {
+            
+        }
     }
 
     public float GetCurrentHealthStamina()

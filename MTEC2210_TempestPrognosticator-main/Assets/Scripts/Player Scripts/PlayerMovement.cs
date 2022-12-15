@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
         // set values for charging and launching
         isCharging = false;
         minLaunchPower = 1f;
-        maxLaunchPower = 20f;
+        maxLaunchPower = 15f;
         chargeRate = 10f;
         launchCost = 10;
 
@@ -182,40 +182,39 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator StartAttack()
     {
+        Debug.Log("ATTACK");
         // checks if an enemy is underneath the player
         // this is a bit of a magic number situation, based on testing in the commented-out OnDrawGizmos function
         // this also returns a RaycastHit2D object so that I can get information about whatever it hits
         
         RaycastHit2D enemyCheck = Physics2D.BoxCast(boxCollider2D.bounds.center - transform.up * .1f, new Vector3(1, .25f, 0), 0f, Vector2.down, 0.5f, enemy);
-        if (enemyCheck)
+        
+        // if the enemy is alive...
+        if (enemyCheck.collider.gameObject.GetComponent<EnemyHealth>().alive == true)
         {
             // get information about the enemy
             currentEnemy = enemyCheck.transform.gameObject;
-            float enemyMinHealth = currentEnemy.GetComponent<EnemyHealth>().minHealth;
-            float currentEnemyHealth = currentEnemy.GetComponent<EnemyHealth>().GetCurrentHealth();
+            float enemyMaxHealth = currentEnemy.GetComponent<EnemyHealth>().maxHealth;
             
             // player attack should hurt enemy by 1/3 of it's health
-            float attackValue = currentEnemyHealth / 3;
+            float attackValue = enemyMaxHealth / 3;
 
-            // can only truly attack if enemy current health it greater than min health
-            if (currentEnemyHealth > enemyMinHealth)
-            {
-                // deal damage to enemy
-                currentEnemy.GetComponent<EnemyHealth>().ReduceHealthDamage(attackValue);
-                
-                // let the enemy know you're attacking, it's only polite
-                currentEnemy.GetComponent<GroundEnemyMovement>().beingAttacked = true;
-                // change attacking bool to true
-                attacking = true;
+            // deal damage to enemy
+            currentEnemy.GetComponent<EnemyHealth>().ReduceHealthDamage(attackValue);
+            
+            // let the enemy know you're attacking, it's only polite
+            currentEnemy.GetComponent<GroundEnemyMovement>().beingAttacked = true;
+            // change attacking bool to true
+            attacking = true;
 
-                while (!draining)
-                {   
-                    rigidbody2D.position = Vector3.MoveTowards(transform.position, currentEnemy.transform.position, attackSpeed);
-                    yield return null;
-                }
+            while (!draining)
+            {   
+                rigidbody2D.position = Vector3.MoveTowards(rigidbody2D.position, currentEnemy.transform.position, attackSpeed);
+                yield return null;
+            }
 
-                StartCoroutine(PlayerDraining());
-            }        
+            StartCoroutine(PlayerDraining());
+                   
         }
     }
 
@@ -248,14 +247,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayerHit()
     {
-        var reverseVelocity = new Vector2();
-
-        if (rigidbody2D.velocity.y != 0)
-        {
-            reverseVelocity = rigidbody2D.velocity * -.5f;
-        }
-        PlayerHealthStamina.ReduceHealthStaminaDamage(10);
-        rigidbody2D.AddForce(reverseVelocity);
+       
+        PlayerHealthStamina.ReduceHealthStaminaDamage(.5f);
+        rigidbody2D.AddForce(Vector2.up * .05f, ForceMode2D.Impulse);
+    }
+    
+    private void OnCollisionStay2D(Collision2D other) {
+        
+        
     }
 
     private void OnCollisionEnter2D(Collision2D other) {
@@ -270,20 +269,30 @@ public class PlayerMovement : MonoBehaviour
                 PlayerHit();
             }
         }
-        
-    }
 
-    private void OnCollisionStay2D(Collision2D other) {
-        if ((other.gameObject.layer == 6) || other.gameObject.layer == 8)
+        // if ((other.gameObject.tag == "Enemy"))
+        // {
+        //     if (attacking == false)
+        //     {
+        //         PlayerHit();
+        //     }
+        // }
+
+        // groundcheck that accounts for walls and ground layers
+        if ((other.gameObject.layer == 6) | other.gameObject.layer == 8)
         {
             groundCheck = true;
         }
         
     }
 
-    
-
-    
+    private void OnCollisionExit2D(Collision2D other) {
+        
+        if ((other.gameObject.layer == 6) | other.gameObject.layer == 8)
+        {
+            groundCheck = false;
+        }
+    }
 
 
     void OnDrawGizmos()
