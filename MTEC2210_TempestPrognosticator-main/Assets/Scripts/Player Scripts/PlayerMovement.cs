@@ -39,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     private PlayerHealthStamina PlayerHealthStamina;
     private PlayerManager PlayerManager;
 
+    public AudioClip boing;
 
     // Start is called before the first frame update
     void Start()
@@ -46,7 +47,7 @@ public class PlayerMovement : MonoBehaviour
         // set values for charging and launching
         isCharging = false;
         minLaunchPower = 1f;
-        maxLaunchPower = 15f;
+        maxLaunchPower = 20f;
         chargeRate = 10f;
         launchCost = 10;
 
@@ -104,11 +105,6 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
-    void FixedUpdate() 
-    {
-        
-            
-    }
     
     void DetermineSpriteDirection()
     {
@@ -159,7 +155,8 @@ public class PlayerMovement : MonoBehaviour
 
     void LaunchPlayer() 
     {
-        
+
+        GetComponent<AudioSource>().PlayOneShot(boing);
         PlayerHealthStamina.ReduceHealthStaminaLaunch(currentCharge, minLaunchPower, maxLaunchPower);
         isCharging = false;
         playerAnimator.SetBool("charging", isCharging);
@@ -182,7 +179,7 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator StartAttack()
     {
-        Debug.Log("ATTACK");
+        
         // checks if an enemy is underneath the player
         // this is a bit of a magic number situation, based on testing in the commented-out OnDrawGizmos function
         // this also returns a RaycastHit2D object so that I can get information about whatever it hits
@@ -218,6 +215,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // player drains life from the enemy
     private IEnumerator PlayerDraining() 
     {
         float attackTimeRemaining = attackTime;
@@ -235,7 +233,8 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
         
-        
+        // gives the player back 1/10th of their health
+        PlayerHealthStamina.IncreaseCurrentHealthStamina(PlayerHealthStamina.maxStaminaHealth/10);
         currentEnemy.GetComponent<GroundEnemyMovement>().beingAttacked = false;    
         attacking = false;
         draining = false;
@@ -245,39 +244,31 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
+    // deals damage to the player and bounces them up
     private void PlayerHit()
     {
        
         PlayerHealthStamina.ReduceHealthStaminaDamage(.5f);
         rigidbody2D.AddForce(Vector2.up * .05f, ForceMode2D.Impulse);
     }
-    
-    private void OnCollisionStay2D(Collision2D other) {
-        
-        
-    }
+  
 
     private void OnCollisionEnter2D(Collision2D other) {
+
+        // collision detection for enemy, either continues with attack or hurts the player
         if ((other.gameObject.tag == "Enemy"))
         {
             if (attacking == true)
             {
                 draining = true;
             }
-            else
+            else if (other.gameObject.GetComponent<EnemyHealth>().alive == true)
             {
                 PlayerHit();
             }
         }
 
-        // if ((other.gameObject.tag == "Enemy"))
-        // {
-        //     if (attacking == false)
-        //     {
-        //         PlayerHit();
-        //     }
-        // }
-
+    
         // groundcheck that accounts for walls and ground layers
         if ((other.gameObject.layer == 6) | other.gameObject.layer == 8)
         {
@@ -286,25 +277,27 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
+    
     private void OnCollisionExit2D(Collision2D other) {
-        
+
+        // groundcheck that accounts for walls and ground layers
         if ((other.gameObject.layer == 6) | other.gameObject.layer == 8)
         {
             groundCheck = false;
         }
     }
-
-
-    void OnDrawGizmos()
-    {
-        boxCollider2D = GetComponent<BoxCollider2D>();
-        Gizmos.color = Color.red;
-
-        
-        //Draw a Ray forward from GameObject toward the maximum distance
-        Gizmos.DrawRay(boxCollider2D.bounds.center, -transform.up * .25f);
-        //Draw a cube at the maximum distance
-        Gizmos.DrawWireCube(boxCollider2D.bounds.center - transform.up * .1f, new Vector3(1, .25f, 0));
-        
-    }
 }
+
+//     void OnDrawGizmos()
+//     {
+//         boxCollider2D = GetComponent<BoxCollider2D>();
+//         Gizmos.color = Color.red;
+
+        
+//         //Draw a Ray forward from GameObject toward the maximum distance
+//         Gizmos.DrawRay(boxCollider2D.bounds.center, -transform.up * .25f);
+//         //Draw a cube at the maximum distance
+//         Gizmos.DrawWireCube(boxCollider2D.bounds.center - transform.up * .1f, new Vector3(1, .25f, 0));
+        
+//     }
+// }

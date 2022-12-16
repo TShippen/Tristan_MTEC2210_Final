@@ -33,11 +33,14 @@ public class PlayerHealthStamina : MonoBehaviour
             alive = false;
         }
 
-        if (alive == false)
-        {
-            
-        }
+        
     }
+
+    public void SetCurrentHealthStamina(float value)
+    {
+        currentStaminaHealth = value;
+    }
+
 
     public float GetCurrentHealthStamina()
     {

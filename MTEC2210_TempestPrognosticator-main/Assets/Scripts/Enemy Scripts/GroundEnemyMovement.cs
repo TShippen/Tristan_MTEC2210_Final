@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GroundEnemyMovement : MonoBehaviour
 {
-    public EnemyHealth EnemyHealth;
+    public EnemyHealth enemyHealth;
     public float speed;
     public float groundRaycastDistance;
     public float wallRaycastDistance;
@@ -16,7 +16,7 @@ public class GroundEnemyMovement : MonoBehaviour
     public LayerMask ground;
     public LayerMask wall;
 
-
+    public AudioClip squeak;
 
     // Start is called before the first frame update
     void Start()
@@ -44,7 +44,7 @@ public class GroundEnemyMovement : MonoBehaviour
 
         // check if being attacked, set movement speed accordingly
         float movementSpeed;
-        if (beingAttacked == true || EnemyHealth.alive == false)
+        if (beingAttacked == true || enemyHealth.alive == false)
         {
             movementSpeed = 0;
             
@@ -80,6 +80,13 @@ public class GroundEnemyMovement : MonoBehaviour
             }
         }
 
+    }
+
+    private void OnCollisionEnter2D(Collision2D other) {
+        if (other.gameObject.layer == 7)
+        {
+            GetComponent<AudioSource>().PlayOneShot(squeak);
+        }
     }
 
     

@@ -19,6 +19,7 @@ public class EnemyHealth : MonoBehaviour
         minHealth = 0;
         maxHealth = 100;
         currentHealth = maxHealth;
+        alive = true;
     }
 
     // Update is called once per frame

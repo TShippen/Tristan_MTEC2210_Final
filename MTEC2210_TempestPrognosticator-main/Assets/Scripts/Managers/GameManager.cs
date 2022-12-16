@@ -8,8 +8,10 @@ public class GameManager : MonoBehaviour
     
     private static GameManager instance;
     public GameObject lastCheckPoint;
+    public GameObject player;
     public PlayerHealthStamina playerHealthStamina;
     public LevelChangeManager levelChangeManager;
+    public EnemyManager enemyManager;
 
 
     public enum ShipLevel
@@ -26,26 +28,40 @@ public class GameManager : MonoBehaviour
     {
         currentLevel = ShipLevel.CargoHold;
         lastCheckPoint = GameObject.Find("Checkpoint 1");
+        levelChangeManager = GetComponent<LevelChangeManager>();
+        playerHealthStamina = player.GetComponent<PlayerHealthStamina>();
         
     }
     // Start is called before the first frame update
     void Start()
     {
-        playerHealthStamina = GameObject.Find("Player").GetComponent<PlayerHealthStamina>();
-        levelChangeManager = GetComponent<LevelChangeManager>();
+        playerHealthStamina = player.GetComponent<PlayerHealthStamina>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        // if player dies, bring player back to last checkpoint
+        // if player dies, restart, bring player back to last checkpoint
         if (playerHealthStamina.alive == false)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            //levelChangeManager.LevelSwitch(playerHealthStamina.gameObject, lastCheckPoint.name, currentLevel);
+            LevelRestart();
+        }
+
+        // for debugging
+        if (Input.GetKey(KeyCode.Space))
+        {
+            LevelRestart();
         }
     }
 
+    private void LevelRestart()
+    {
+        StartCoroutine(levelChangeManager.LevelSwitch(player, lastCheckPoint.name, currentLevel));
+
+        enemyManager.ResurrectEnemies();
+        
+    }
 
     public SpriteRenderer GetLevelSprite()
     {

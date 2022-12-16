@@ -47,6 +47,7 @@ public class LevelChangeManager : MonoBehaviour
     {
         Debug.Log(targetCheckpoint);
         float fadeTimer = fadeTime;
+        PlayerHealthStamina playerHealthStamina = player.GetComponent<PlayerHealthStamina>();
         player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePosition;
         fadeAnimator.SetBool("Fade Out", true);
         while (fadeTimer > 0)
@@ -56,6 +57,8 @@ public class LevelChangeManager : MonoBehaviour
 
         }
         gameManager.currentLevel = targetLevel;
+        playerHealthStamina.alive = true;
+        playerHealthStamina.SetCurrentHealthStamina(playerHealthStamina.maxStaminaHealth);
         player.transform.position = GameObject.Find(targetCheckpoint).transform.position;
         player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
         fadeAnimator.SetBool("Fade Out", false);

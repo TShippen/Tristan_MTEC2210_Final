@@ -46,6 +46,13 @@ public class StaminaHealthBar : MonoBehaviour
             float percentComplete = lerpTimer / slideTimer;
             
             backSlider.value = Mathf.Lerp(backSlider.value, currentHealthStaminaOnSlider, percentComplete);
+        } else if (backSlider.value < currentHealthStaminaOnSlider)
+        {
+            frontSlider.value = currentHealthStaminaOnSlider;
+            lerpTimer += Util.FrameDependant(1);
+            float percentComplete = lerpTimer / slideTimer;
+            
+            backSlider.value = Mathf.Lerp(backSlider.value, currentHealthStaminaOnSlider, percentComplete);
         }
         lerpTimer = 0;
     
