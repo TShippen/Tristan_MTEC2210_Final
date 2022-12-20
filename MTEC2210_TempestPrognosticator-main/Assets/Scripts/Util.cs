@@ -15,6 +15,8 @@ public class Util : MonoBehaviour
         return newValue;
     }
 
+    // a quick way to multiply a value by Time.deltaTime
+    // this felt more visually organized than multiplying every time
     public static float FrameDependant(float value)
     {
         return value * Time.deltaTime;

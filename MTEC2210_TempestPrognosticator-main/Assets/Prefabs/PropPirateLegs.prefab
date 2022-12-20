@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1183905285204973381}
   - component: {fileID: -2002544819945759613}
   m_Layer: 0
-  m_Name: Prop Pirate Legs
+  m_Name: PropPirateLegs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

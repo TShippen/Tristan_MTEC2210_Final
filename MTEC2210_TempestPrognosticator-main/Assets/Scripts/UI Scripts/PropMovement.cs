@@ -14,6 +14,7 @@ public class PropMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // sets the start and end positions based on child objects
         start = transform.Find("Start").position;
         end = transform.Find("End").position;
         forward = true;
@@ -24,6 +25,8 @@ public class PropMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // moves the object between the start and end points at a set speed
+        // reverses direction when the endpoints are reached
         float step = Util.FrameDependant(movementSpeed);
         if (forward)
         {

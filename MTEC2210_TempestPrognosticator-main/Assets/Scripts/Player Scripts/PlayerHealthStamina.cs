@@ -49,6 +49,7 @@ public class PlayerHealthStamina : MonoBehaviour
 
     public float ReduceHealthStaminaLaunch(float launchAmount, float minLaunchPower, float maxLaunchPower) 
     {
+        // reduces the healthstamina based on the launch amount and min and max launch cost
         float launchCostRatio = Util.RemapRange(launchAmount, minLaunchPower, maxLaunchPower, 0, maxLaunchCost);
         currentStaminaHealth -= launchCostRatio;
         return currentStaminaHealth;

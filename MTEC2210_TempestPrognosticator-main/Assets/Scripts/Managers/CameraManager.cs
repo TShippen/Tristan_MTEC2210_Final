@@ -6,11 +6,12 @@ public class CameraManager : MonoBehaviour
 {
     private Camera mainCamera;
     public GameManager gameManager;
+    
+    // camera follow/clamp variables
     public Transform playerTransform; 
     private float cameraZOffset = -100;
     private float smoothTime;
     private Vector3 velocity = Vector3.zero;
-
     private float xMin, xMax, yMin, yMax;
     private float camX, camY;
     private float camOrthsize;
@@ -49,7 +50,7 @@ public class CameraManager : MonoBehaviour
     void CameraFollow()
     {
 
-        // set clamp variables
+        // set clamp variables based on background sprite from level
         xMin = gameManager.GetLevelSprite().bounds.min.x;
         xMax = gameManager.GetLevelSprite().bounds.max.x;
         yMin = gameManager.GetLevelSprite().bounds.min.y + .25f;
@@ -64,7 +65,7 @@ public class CameraManager : MonoBehaviour
         // clamps camera position based on sprite size from level sprite
         Vector3 targetPosition = new Vector3(camX, camY, cameraZOffset);
 
-        
+        // camera follows the player with slight delay
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
         
         
@@ -74,7 +75,9 @@ public class CameraManager : MonoBehaviour
     
     void TiltCamera()
     {
-        
+        // increase or decrease tilt amount, than swap at min and max
+        // this is inspired by the charge bar UI and works the same way
+        // I could probably make this kind of thing a static function...
         if(tiltingLeft)
         {
             currentTilt += Util.FrameDependant(tiltSpeed);
@@ -95,7 +98,8 @@ public class CameraManager : MonoBehaviour
         }
 
         
-
+        // tilt the camera on the z axis only, clamped between min and max - 1 
+        // doing so let's the corners go negative on the y axis visually
         transform.eulerAngles = new Vector3(
             transform.eulerAngles.x,
             transform.eulerAngles.y,

@@ -21,6 +21,8 @@ public class CheckpointManager : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
+        
+        // if the player (layer 7) collides with the checkpoint, set the last checkpoint to this object
         if (other.gameObject.layer == 7)
         {
             

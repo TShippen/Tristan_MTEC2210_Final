@@ -21,8 +21,11 @@ public class GroundEnemyMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // set speed randomly between .5 and 2
         float speedRandomizer = Random.value;
         speed = Util.RemapRange(speedRandomizer, 0, 1, .5f, 2);
+
+        // set movement variables
         groundRaycastDistance = .2f;
         wallRaycastDistance = .1f;
         movingRight = true;
@@ -33,8 +36,10 @@ public class GroundEnemyMovement : MonoBehaviour
     void Update() 
     {
         Patrol();
-        Debug.DrawRay(frontBumperTransform.position, new Vector2(0, -groundRaycastDistance), Color.green);
-        Debug.DrawRay(frontBumperTransform.position, new Vector2(wallRaycastDistance, 0), Color.green);
+
+        // debug tools used to visualize the raycast
+        // Debug.DrawRay(frontBumperTransform.position, new Vector2(0, -groundRaycastDistance), Color.green);
+        // Debug.DrawRay(frontBumperTransform.position, new Vector2(wallRaycastDistance, 0), Color.green);
     }
 
     
@@ -42,7 +47,7 @@ public class GroundEnemyMovement : MonoBehaviour
     {
         
 
-        // check if being attacked, set movement speed accordingly
+        // check if being attacked and if alive, set movement speed accordingly
         float movementSpeed;
         if (beingAttacked == true || enemyHealth.alive == false)
         {
@@ -54,12 +59,16 @@ public class GroundEnemyMovement : MonoBehaviour
             movementSpeed = speed;
         }
         
+        // move object "forward"
+        transform.Translate(Vector2.right * Util.FrameDependant(movementSpeed));
 
+        // use raycasts to check for walls and ground
         bool groundInfo = Physics2D.Raycast(frontBumperTransform.position, Vector2.down, groundRaycastDistance, ground);
         bool wallInfo =  Physics2D.Raycast(frontBumperTransform.position, new Vector2(wallRaycastDistance, 0), wallRaycastDistance, wall);
         
-        transform.Translate(Vector2.right * Util.FrameDependant(movementSpeed));
+        
 
+        // if wall is present or ground is not, flip the object depending on the direction it's already facing
         if (groundInfo == false || wallInfo == true)
         {
             
@@ -83,17 +92,15 @@ public class GroundEnemyMovement : MonoBehaviour
     }
 
     private void OnCollisionEnter2D(Collision2D other) {
+        
+        // if collide with player layer (layer 7) play squeak sound
         if (other.gameObject.layer == 7)
         {
             GetComponent<AudioSource>().PlayOneShot(squeak);
         }
     }
 
-    
 
-    
-
-   
 
 
 }

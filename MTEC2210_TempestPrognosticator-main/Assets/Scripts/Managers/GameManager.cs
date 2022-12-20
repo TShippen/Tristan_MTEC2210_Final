@@ -48,13 +48,14 @@ public class GameManager : MonoBehaviour
             LevelRestart();
         }
 
-        // for debugging
-        if (Input.GetKey(KeyCode.Space))
-        {
-            LevelRestart();
-        }
+        // for debugging purposes only, uncomment below to use
+        // if (Input.GetKey(KeyCode.Space))
+        // {
+        //     LevelRestart();
+        // }
     }
 
+    // restart the level by moving the player to the last checkpoint, which will be on the current level
     private void LevelRestart()
     {
         StartCoroutine(levelChangeManager.LevelSwitch(player, lastCheckPoint.name, currentLevel));
@@ -63,6 +64,7 @@ public class GameManager : MonoBehaviour
         
     }
 
+    // used to get sprite demensions used in camera clamp
     public SpriteRenderer GetLevelSprite()
     {
         SpriteRenderer currentLevelSprite = null;

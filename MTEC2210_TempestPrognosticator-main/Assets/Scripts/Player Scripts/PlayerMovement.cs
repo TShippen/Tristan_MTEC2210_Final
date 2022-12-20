@@ -14,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
     public float maxLaunchPower;            // minimuim launch power
     public bool isCharging;                 // is charging active
     private bool isChargingUp;               // is charging moving up towards its max, used in the charge bar
-    [SerializeField] private float currentCharge;             // the force being applied to the player launch when the button is released
+    private float currentCharge;             // the force being applied to the player launch when the button is released
     private Vector3 launchDirection;        // direction that the player will be launched, also where the player is "looking"
     private Vector3 mousePosition;          // mouse position taken as long as mouse button is held 
     private bool inFlight = false;          // becomes true if the player is in flight
@@ -23,7 +23,7 @@ public class PlayerMovement : MonoBehaviour
     public bool groundCheck;
 
     // attack variables
-    public float attackSpeed;
+    public float attackBoxDistance;
     public bool attacking;
     public float attackTime;
     public bool draining;
@@ -52,7 +52,7 @@ public class PlayerMovement : MonoBehaviour
         launchCost = 10;
 
         //set values for attacking
-        attackSpeed = .1f;
+        attackBoxDistance = .5f;
         attackTime = 2;
         attacking = false;
 
@@ -72,9 +72,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        // set collider size to sprite size
-        //boxCollider2D.size = spriteRenderer.sprite.bounds.size;
+        
         // determine mouse position
         mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         DetermineLaunchDirection();
@@ -132,6 +130,7 @@ public class PlayerMovement : MonoBehaviour
         isCharging = true;
         playerAnimator.SetBool("charging", isCharging);
 
+        // increases and decreases the charge value between min and max
         if(isChargingUp)
         {
             currentCharge += Util.FrameDependant(chargeRate);
@@ -155,14 +154,14 @@ public class PlayerMovement : MonoBehaviour
 
     void LaunchPlayer() 
     {
-
+        // play sound effect
         GetComponent<AudioSource>().PlayOneShot(boing);
         PlayerHealthStamina.ReduceHealthStaminaLaunch(currentCharge, minLaunchPower, maxLaunchPower);
         isCharging = false;
         playerAnimator.SetBool("charging", isCharging);
+
+        // launch the player 
         rigidbody2D.AddForce(launchDirection * currentCharge, ForceMode2D.Impulse);
-
-
 
         // reset current charge
         currentCharge = 0;
@@ -184,7 +183,7 @@ public class PlayerMovement : MonoBehaviour
         // this is a bit of a magic number situation, based on testing in the commented-out OnDrawGizmos function
         // this also returns a RaycastHit2D object so that I can get information about whatever it hits
         
-        RaycastHit2D enemyCheck = Physics2D.BoxCast(boxCollider2D.bounds.center - transform.up * .1f, new Vector3(1, .25f, 0), 0f, Vector2.down, 0.5f, enemy);
+        RaycastHit2D enemyCheck = Physics2D.BoxCast(boxCollider2D.bounds.center - transform.up * .1f, new Vector3(1, .25f, 0), 0f, Vector2.down, attackBoxDistance, enemy);
         
         // if the enemy is alive...
         if (enemyCheck.collider.gameObject.GetComponent<EnemyHealth>().alive == true)
@@ -201,15 +200,18 @@ public class PlayerMovement : MonoBehaviour
             
             // let the enemy know you're attacking, it's only polite
             currentEnemy.GetComponent<GroundEnemyMovement>().beingAttacked = true;
+            
             // change attacking bool to true
             attacking = true;
 
+            // move towards the enemy
             while (!draining)
             {   
-                rigidbody2D.position = Vector3.MoveTowards(rigidbody2D.position, currentEnemy.transform.position, attackSpeed);
+                rigidbody2D.position = Vector3.MoveTowards(rigidbody2D.position, currentEnemy.transform.position, Util.FrameDependant(attackBoxDistance/10));
                 yield return null;
             }
 
+            // start the draining function
             StartCoroutine(PlayerDraining());
                    
         }
@@ -221,9 +223,7 @@ public class PlayerMovement : MonoBehaviour
         float attackTimeRemaining = attackTime;
         Debug.Log(attackTimeRemaining);
         
-        
-        
-            
+        // drain the enemy for the "attacktime"
         while (attackTimeRemaining > 0)
         {
         
@@ -235,6 +235,8 @@ public class PlayerMovement : MonoBehaviour
         
         // gives the player back 1/10th of their health
         PlayerHealthStamina.IncreaseCurrentHealthStamina(PlayerHealthStamina.maxStaminaHealth/10);
+
+        // reset the bools, launch the player towards the mouse for half the max charge
         currentEnemy.GetComponent<GroundEnemyMovement>().beingAttacked = false;    
         attacking = false;
         draining = false;
@@ -288,6 +290,7 @@ public class PlayerMovement : MonoBehaviour
     }
 }
 
+// used to visualize the boxcast
 //     void OnDrawGizmos()
 //     {
 //         boxCollider2D = GetComponent<BoxCollider2D>();

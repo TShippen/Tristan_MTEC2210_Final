@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3764316409993169977}
   - component: {fileID: 6898958197338349386}
   m_Layer: 0
-  m_Name: Hanging Light
+  m_Name: HangingLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

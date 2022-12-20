@@ -6,6 +6,7 @@ public class EnemyHealth : MonoBehaviour
 {
     public Animator animator;
     public Sprite ratDead;
+    
     // health variables
     public float maxHealth;
     public float minHealth;
@@ -32,7 +33,7 @@ public class EnemyHealth : MonoBehaviour
         
         }
         
-
+        // if not alive, set the animation parameter to true, changing the sprite
         if (!alive)
         {
             animator.SetBool("Dead", true);

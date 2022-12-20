@@ -12,7 +12,7 @@ public class ChargeBar : MonoBehaviour
     private PlayerMovement PlayerLaunch;
     public CanvasGroup canvasGroup;
 
-    [SerializeField] private float currentLaunchCharge;
+    private float currentLaunchCharge;
     private float currentChargeOnSlider;
     private float minLaunchPower;
     private float maxLaunchPower;
@@ -43,8 +43,9 @@ public class ChargeBar : MonoBehaviour
 
     private void UpdateBarUI()
     {
-        canvasGroup.alpha = 0;
+        // sets the UI to visible or invisible if the charge is not 0
         currentLaunchCharge = PlayerLaunch.GetCurrentCharge();
+        canvasGroup.alpha = 0;
         if(currentLaunchCharge > 0)
         {
             canvasGroup.alpha = 1;

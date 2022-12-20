@@ -43,22 +43,37 @@ public class LevelChangeManager : MonoBehaviour
         
     }
 
+    
     public IEnumerator LevelSwitch(GameObject player, string targetCheckpoint, GameManager.ShipLevel targetLevel)
     {
-        Debug.Log(targetCheckpoint);
-        float fadeTimer = fadeTime;
-        PlayerHealthStamina playerHealthStamina = player.GetComponent<PlayerHealthStamina>();
+        
+
+        
+
+        // freeze the player in place
         player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePosition;
+        
+        // negin the fade out animation
         fadeAnimator.SetBool("Fade Out", true);
+        
+        // this fade time process is only to delay the rest of the script
+        float fadeTimer = fadeTime;
         while (fadeTimer > 0)
         {
             fadeTimer -= Time.deltaTime;
             yield return null;
 
         }
+
+        // set the current level to the target level passed to the function
         gameManager.currentLevel = targetLevel;
+        
+        // make sure the player is alive and reset the health
+        PlayerHealthStamina playerHealthStamina = player.GetComponent<PlayerHealthStamina>();
         playerHealthStamina.alive = true;
         playerHealthStamina.SetCurrentHealthStamina(playerHealthStamina.maxStaminaHealth);
+
+        // move player to the checkpoint then unfreeze and fade back in
         player.transform.position = GameObject.Find(targetCheckpoint).transform.position;
         player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
         fadeAnimator.SetBool("Fade Out", false);
